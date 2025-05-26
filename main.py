@@ -1,19 +1,17 @@
 from flask import Flask, request
+import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.dispatcher.webhook import get_new_configured_app, Dispatcher
-import asyncio
-import logging
-import os
 
 API_TOKEN = '7549837458:AAFE1zz6dh24JYr5ufJx3JuBYeJHMYg8eaw'  # 🔁 Замени на свой токен
-WEBHOOK_HOST = 'https://zelinski-order-bot-yd5g.onrender.com'  # 🔁 Вставь URL своего хоста
-WEBHOOK_PATH = '/webhook'
-WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
-ADMIN_ID = 354773080
+ADMIN_ID = 354773080  # 🔁 Замени на свой Telegram ID
+WEBHOOK_HOST = 'https://zelinski-order-bot-q6hw.onrender.com'  # 🔁 Вставь сюда URL своего сервиса Render
+WEBHOOK_PATH = f'/webhook/{API_TOKEN}'
+WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
+app = Flask(name)
 
 menu = ReplyKeyboardMarkup(resize_keyboard=True)
 menu.add(KeyboardButton("🛍 Каталог"), KeyboardButton("📦 Оформить заказ"))
@@ -56,13 +54,15 @@ async def get_address(message: types.Message):
 async def get_phone(message: types.Message):
     user_order[message.chat.id]['phone'] = message.text
     data = user_order[message.chat.id]
-    msg = f"🎉 *Новый заказ!*\n\n👤 Имя: {data['name']}\n🏠 Адрес: {data['address']}\n📞 Телефон: {data['phone']}"
+    msg = (
+        f"🎉 *Новый заказ!*\n\n"
+        f"👤 Имя: {data['name']}\n"
+        f"🏠 Адрес: {data['address']}\n"
+        f"📞 Телефон: {data['phone']}"
+    )
     await bot.send_message(ADMIN_ID, msg, parse_mode="Markdown")
     await message.answer("Спасибо за заказ! Мы с вами свяжемся в ближайшее время. 🌸")
     del user_order[message.chat.id]
-
-# Flask-приложение
-app = Flask(__name__)
 
 @app.route(WEBHOOK_PATH, methods=['POST'])
 async def webhook():
@@ -70,18 +70,12 @@ async def webhook():
     await dp.process_update(update)
     return 'ok'
 
-@app.route('/')
-def index():
-    return 'Бот работает 🟢'
-
 async def on_startup():
+    # Устанавливаем webhook при старте приложения
     await bot.set_webhook(WEBHOOK_URL)
 
-async def on_shutdown():
-    await bot.delete_webhook()
-
-if name == '__main__':
-    logging.basicConfig(level=logging.INFO)
+if name == 'main':
     loop = asyncio.get_event_loop()
     loop.run_until_complete(on_startup())
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    # Запускаем Flask сервер
+    app.run(host='0.0.0.0', port=8080)
