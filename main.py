@@ -1,33 +1,23 @@
-from flask import Flask
-import threading
+from flask import Flask, request
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.utils import executor
+from aiogram.dispatcher.webhook import get_new_configured_app, Dispatcher
+import asyncio
+import logging
+import os
 
-# 🔑 Настройки
-API_TOKEN = '7549837458:AAFE1zz6dh24JYr5ufJx3JuBYeJHMYg8eaw'
-ADMIN_ID = 354773080  # ← Замени на свой Telegram ID
+API_TOKEN = '7549837458:AAFE1zz6dh24JYr5ufJx3JuBYeJHMYg8eaw'  # 🔁 Замени на свой токен
+WEBHOOK_HOST = 'https://zelinski-order-bot-yd5g.onrender.com'  # 🔁 Вставь URL своего хоста
+WEBHOOK_PATH = '/webhook'
+WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+ADMIN_ID = 354773080
 
-# Инициализация бота
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
-# Запускаем фейковый веб-сервер для Render
-app = Flask(__name__)
-@app.route('/')
-def home():
-    return 'Zelinski Bot is running!'
-
-def run_web():
-    app.run(host='0.0.0.0', port=8080)
-
-threading.Thread(target=run_web).start()
-
-# Клавиатура
 menu = ReplyKeyboardMarkup(resize_keyboard=True)
 menu.add(KeyboardButton("🛍 Каталог"), KeyboardButton("📦 Оформить заказ"))
 
-# Продукты
 products = {
     "Крем Лаванда-Пачули": "250 мл — 4 200 ₽",
     "Мыло Cedarwood": "150 г — 2 000 ₽",
@@ -71,6 +61,27 @@ async def get_phone(message: types.Message):
     await message.answer("Спасибо за заказ! Мы с вами свяжемся в ближайшее время. 🌸")
     del user_order[message.chat.id]
 
-# 🔁 Старт бота
-if __name__ == '__main__':
-    executor.start_polling(dp)
+# Flask-приложение
+app = Flask(__name__)
+
+@app.route(WEBHOOK_PATH, methods=['POST'])
+async def webhook():
+    update = types.Update(**request.json)
+    await dp.process_update(update)
+    return 'ok'
+
+@app.route('/')
+def index():
+    return 'Бот работает 🟢'
+
+async def on_startup():
+    await bot.set_webhook(WEBHOOK_URL)
+
+async def on_shutdown():
+    await bot.delete_webhook()
+
+if name == '__main__':
+    logging.basicConfig(level=logging.INFO)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(on_startup())
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
