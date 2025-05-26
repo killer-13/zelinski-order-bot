@@ -54,5 +54,5 @@ async def get_phone(message: types.Message):
     await message.answer("Спасибо за заказ! Мы с вами свяжемся в ближайшее время. 🌸")
     del user_order[message.chat.id]
 
-if name == '__main__':
+if __name__ == '__main__':
     executor.start_polling(dp)
