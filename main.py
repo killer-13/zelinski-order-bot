@@ -2,8 +2,8 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils import executor
 
-API_TOKEN = 'YOUR_BOT_TOKEN'  # 🔁 Замени на свой токен
-ADMIN_ID = 123456789           # 🔁 Замени на свой Telegram ID
+API_TOKEN = 7549837458:AAFE1zz6dh24JYr5ufJx3JuBYeJHMYg8eaw  # 🔁 Замени на свой токен
+ADMIN_ID = 354773080           # 🔁 Замени на свой Telegram ID
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
