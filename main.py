@@ -1,16 +1,33 @@
+from flask import Flask
+import threading
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils import executor
 
-API_TOKEN = '7549837458:AAFE1zz6dh24JYr5ufJx3JuBYeJHMYg8eaw'  # 🔁 Замени на свой токен
-ADMIN_ID = 354773080           # 🔁 Замени на свой Telegram ID
+# 🔑 Настройки
+API_TOKEN = '7549837458:AAFE1zz6dh24JYr5ufJx3JuBYeJHMYg8eaw'
+ADMIN_ID = 354773080  # ← Замени на свой Telegram ID
 
+# Инициализация бота
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
+# Запускаем фейковый веб-сервер для Render
+app = Flask(__name__)
+@app.route('/')
+def home():
+    return 'Zelinski Bot is running!'
+
+def run_web():
+    app.run(host='0.0.0.0', port=8080)
+
+threading.Thread(target=run_web).start()
+
+# Клавиатура
 menu = ReplyKeyboardMarkup(resize_keyboard=True)
 menu.add(KeyboardButton("🛍 Каталог"), KeyboardButton("📦 Оформить заказ"))
 
+# Продукты
 products = {
     "Крем Лаванда-Пачули": "250 мл — 4 200 ₽",
     "Мыло Cedarwood": "150 г — 2 000 ₽",
@@ -54,5 +71,6 @@ async def get_phone(message: types.Message):
     await message.answer("Спасибо за заказ! Мы с вами свяжемся в ближайшее время. 🌸")
     del user_order[message.chat.id]
 
+# 🔁 Старт бота
 if __name__ == '__main__':
     executor.start_polling(dp)
