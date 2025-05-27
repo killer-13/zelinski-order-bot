@@ -62,7 +62,7 @@ async def get_phone(message: types.Message):
 async def contact_manager(message: types.Message):
     contact_text = (
         "Чтобы связаться с менеджером, напишите сюда:\n"
-        "📨 @tdrbt\n\n"
+        "📨 [Антон] @tdrbt\n\n"
         "Или позвоните: 📱 +7 (923) 123-44-55"
     )
     await message.answer(contact_text)
