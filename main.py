@@ -9,7 +9,11 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
 menu = ReplyKeyboardMarkup(resize_keyboard=True)
-menu.add(KeyboardButton("🛍 Каталог"), KeyboardButton("📦 Оформить заказ"))
+menu.add(
+    KeyboardButton("🛍 Каталог"),
+    KeyboardButton("📦 Оформить заказ")
+)
+menu.add(KeyboardButton("📞 Связаться с менеджером"))
 
 products = {
     "Крем Лаванда-Пачули": "250 мл — 4 200 ₽",
@@ -53,6 +57,15 @@ async def get_phone(message: types.Message):
     await bot.send_message(ADMIN_ID, msg, parse_mode="Markdown")
     await message.answer("Спасибо за заказ! Мы с вами свяжемся в ближайшее время. 🌸")
     del user_order[message.chat.id]
+
+@dp.message_handler(lambda message: message.text == "📞 Связаться с менеджером")
+async def contact_manager(message: types.Message):
+    contact_text = (
+        "Чтобы связаться с менеджером, напишите сюда:\n"
+        "📨 @tdrbt\n\n"
+        "Или позвоните: 📱 +7 (923) 123-44-55"
+    )
+    await message.answer(contact_text)
 
 if __name__ == '__main__':
     executor.start_polling(dp)
