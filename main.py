@@ -69,5 +69,9 @@ async def contact_manager(message: types.Message):
 
 if __name__ == '__main__':
     import asyncio
-    asyncio.run(bot.delete_webhook())  # сбрасываем webhook перед polling
-    executor.start_polling(dp)
+
+    async def main():
+        await bot.delete_webhook()  # сбрасываем webhook перед polling
+        await dp.start_polling()
+
+    asyncio.run(main())
