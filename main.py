@@ -1,14 +1,9 @@
 from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.utils import executor
 
-import logging
-import os
-
-API_TOKEN = os.getenv("API_TOKEN")  # <-- из переменной окружения
-ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
-
-logging.basicConfig(level=logging.INFO)
+API_TOKEN = '7549837458:AAFE1zz6dh24JYr5ufJx3JuBYeJHMYg8eaw'  # 🔁 Замени на свой токен
+ADMIN_ID = 354773080           # 🔁 Замени на свой Telegram ID
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
@@ -59,5 +54,5 @@ async def get_phone(message: types.Message):
     await message.answer("Спасибо за заказ! Мы с вами свяжемся в ближайшее время. 🌸")
     del user_order[message.chat.id]
 
-if name == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+if __name__ == '__main__':
+    executor.start_polling(dp)
